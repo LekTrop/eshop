@@ -49,7 +49,11 @@ public class ProductService {
      * @return deleted {@link Product}
      */
     public Product deleteById(final Long productId) {
-        return productRepository.deleteByProductId(productId);
+        final Product product = findById(productId);
+
+        productRepository.delete(product);
+
+        return product;
     }
 
     /**
@@ -65,10 +69,12 @@ public class ProductService {
     /**
      * Update {@link Product}
      *
-     * @param updated entity
+     * @param updated entity to update
      * @return {@link Product}
      */
-    public Product update(final Product updated) {
+    public Product update(final Product updated, final Long id) {
+        final Product original = findById(id);
+
         return productRepository.save(updated);
     }
 }

@@ -1,8 +1,11 @@
 package ua.hnure.eshop.controller;
 
 import static org.springframework.http.HttpStatus.OK;
+import static ua.hnure.eshop.exception.ErrorRegister.ENTITY_NOT_FOUND_EXCEPTION;
+import static ua.hnure.eshop.util.EndpointUtils.getHttpStatusCode;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import lombok.NonNull;
@@ -18,13 +21,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ua.hnure.eshop.exception.EntityNotFoundException;
 import ua.hnure.eshop.model.Product;
 import ua.hnure.eshop.model.dto.ProductDto;
 import ua.hnure.eshop.model.mapper.ProductMapper;
 import ua.hnure.eshop.service.ProductService;
 
 /**
- * Class that received http requests and send http response`
+ * Class that received http requests and send http response
  *
  * @author oleksandr.zhytariuk (ozhytari)
  * @since 0.1
@@ -56,7 +60,7 @@ public class ProductController {
 
         log.info("findAll.X: response with entity: {} and status code: {}",
                  responseEntity.getBody(),
-                 responseEntity.getStatusCode());
+                 getHttpStatusCode(responseEntity));
         return responseEntity;
     }
 
@@ -70,15 +74,17 @@ public class ProductController {
     public ResponseEntity<ProductDto> findById(final @PathVariable Long id) {
         log.info("findById.E: product id: {}", id);
 
-        final ProductDto productDto = productMapper.toDto(productService.findById(id));
-
-        //TODO: Throw exception if productDTO is null
+        final ProductDto productDto = Optional.ofNullable(productService.findById(id))
+                                              .map(productMapper::toDto)
+                                              .orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND_EXCEPTION,
+                                                                                             id));
 
         final ResponseEntity<ProductDto> responseEntity = new ResponseEntity<>(productDto, OK);
 
-        log.info("findById.X response with entity : {} and status code: {} ",
+        log.info("findById.X Response entity body: {} and status code: {} ",
                  responseEntity.getBody(),
-                 responseEntity.getStatusCode());
+                 getHttpStatusCode(responseEntity));
+
         return responseEntity;
     }
 
@@ -98,7 +104,7 @@ public class ProductController {
 
         log.info("save.X response with entity: {} and status code: {}",
                  responseEntity.getBody(),
-                 responseEntity.getStatusCode());
+                 getHttpStatusCode(responseEntity));
 
         return responseEntity;
     }
@@ -118,7 +124,7 @@ public class ProductController {
         final ResponseEntity<?> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT)
                                                                .build();
 
-        log.info("delete.X response status: {}", responseEntity);
+        log.info("delete.X Response status: {}", getHttpStatusCode(responseEntity));
         return responseEntity;
     }
 
@@ -134,12 +140,12 @@ public class ProductController {
         log.info("update.E Update product with id: {} and updated product: {}", id, productDto);
 
         final Product original = productMapper.toDomain(productDto);
-        final ProductDto updatedProduct = productMapper.toDto(productService.update(original));
+        final ProductDto updatedProduct = productMapper.toDto(productService.update(original, id));
         final ResponseEntity<ProductDto> responseEntity = new ResponseEntity<>(updatedProduct, OK);
 
         log.info("update.X Response with entity: {} and status code: {}",
                  responseEntity.getBody(),
-                 responseEntity.getStatusCode());
+                 getHttpStatusCode(responseEntity));
 
         return responseEntity;
     }

@@ -1,7 +1,5 @@
 package ua.hnure.eshop.model.dto;
 
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,10 +13,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ua.hnure.eshop.model.Category;
-import ua.hnure.eshop.model.Product;
 
 /**
- * Represent DTO entity for {@link Product}
+ * Represent DTO entity for {@link Category}
  *
  * @author oleksandr.zhytariuk (ozhytari)
  * @since 0.1
@@ -30,12 +27,15 @@ import ua.hnure.eshop.model.Product;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductDto {
+public class CategoryDto {
 
-    private Long productId;
+    private Long categoryId;
     private String name;
     private String description;
-    private Instant createdDate;
-    private BigDecimal price;
-    private Integer availableCount;
+    private CategoryDto subCategory;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonProperty("products")
+    @Builder.Default
+    private Set<ProductDto> products = new HashSet<>();
 }

@@ -1,9 +1,8 @@
-package ua.hnure.eshop.model;
+package ua.hnure.eshop.model.authentication;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -25,44 +23,36 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Model that define a basic Category in EShop
+ * TODO: Change class description
  *
  * @author oleksandr.zhytariuk (ozhytari)
  * @since 0.1
  */
+@Builder(toBuilder = true)
+@EqualsAndHashCode
+@ToString
 @Getter
 @Setter
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@EqualsAndHashCode
-@Builder(toBuilder = true)
-@Table(name = "category")
-@Entity
-public class Category {
+@Table(name = "roles")
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id", unique = true, nullable = false)
-    private Long categoryId;
+    @Column(name = "role_id", nullable = false)
+    private Long roleId;
 
-    @Column(name = "name", unique = true, nullable = false)
+    @Column(name = "name")
     private String name;
 
     @Column(name = "description")
     private String description;
 
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "sub_category_fk")
-    private Category subCategory;
-
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "category_products",
-            joinColumns = @JoinColumn(name = "category_fk"),
-            inverseJoinColumns = @JoinColumn(name = "product_fk"))
-    private Set<Product> products = new HashSet<>();
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "fk_role_id"),
+            inverseJoinColumns = @JoinColumn(name = "fk_user_id"))
+    private Set<User> users = new HashSet<>();
 }

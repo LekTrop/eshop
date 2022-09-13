@@ -64,7 +64,6 @@ public class Product {
     @Column(name = "available_count", nullable = false)
     private Integer availableCount = 0;
 
-    @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "category_products",
             joinColumns = @JoinColumn(name = "product_fk"),

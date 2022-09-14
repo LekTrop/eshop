@@ -37,7 +37,7 @@ public class CategoryServiceTest {
     @Test
     public void findById() {
         //GIVEN
-        when(mockCategoryRepository.findById(CATEGORY_ID)).thenReturn(null);
+        when(mockCategoryRepository.findById(CATEGORY_ID)).thenReturn(CATEGORY_OPTIONAL);
 
         //WHEN
         final Category category = unit.findById(CATEGORY_ID);

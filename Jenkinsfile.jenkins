@@ -1,23 +1,30 @@
-#!groovy
-
 pipeline {
     agent any
-
+    tools {
+        maven "MAVEN"
+        jdk "JDK"
+    }
     stages {
-        stage('Build 1') {
-            steps {
-                echo 'Building..'
+        stage('Initialize'){
+            steps{
+                echo "PATH = ${M2_HOME}/bin:${PATH}"
+                echo "M2_HOME = /opt/maven"
             }
         }
-        stage('Test') {
+        stage('Build') {
             steps {
-                echo 'Testing..'
+                dir("/var/lib/jenkins/workspace/demopipelinetask/my-app") {
+                    sh 'mvn -B -DskipTests clean package'
+                }
             }
         }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying....'
-            }
+    }
+    post {
+        always {
+            junit(
+                    allowEmptyResults: true,
+                    testResults: '*/test-reports/.xml'
+            )
         }
     }
 }
